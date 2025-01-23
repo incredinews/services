@@ -111,7 +111,8 @@ jobs:
               git clone https://github.com/TheFoundation/cloudflare-worker-scraper.git metaworker
               docker compose build
               #docker compose up
-              docker compose up -d loki 
+              docker compose up -d loki
+              docker compose up -d ingress
               docker compose logs --follow loki &
               #docker compose up action
               docker compose up finish -d &
