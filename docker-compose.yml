@@ -94,7 +94,7 @@ services:
       dockerfile: Dockerfile.cf
     restart: unless-stopped
     #command: tunnel run 
-    command: tunnel run ghrun --config=/etc/cloudflared/config.yml
+    command: tunnel run ghrun 
 #    environment:
 #      - TUNNEL_TOKEN=mytokengoeshere
   meta:
