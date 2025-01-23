@@ -116,7 +116,7 @@ services:
       context: .
       dockerfile: Dockerfile.meta
     restart: unless-stopped
-    command: /bin/bash -c "cd /worker;npx wrangler dev"
+    command: /bin/bash -c "cd /worker;npm install ;npx wrangler dev"
   fetch:
     depends_on:
       - loki
