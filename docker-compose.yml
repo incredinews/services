@@ -93,16 +93,22 @@ services:
       context: .
       dockerfile: Dockerfile.cf
     restart: unless-stopped
-    command: tunnel run --config=/root/.cloudflared/config.yml
+    #command: tunnel run --config=/root/.cloudflared/config.yml
+    command: tunnel run 
 #    environment:
 #      - TUNNEL_TOKEN=mytokengoeshere
   meta:
+  
     depends_on:
       - loki
     networks:
       loki:
         ipv4_address: 10.12.34.112
     container_name: metainfo
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: 10.12.34.55:24224
     #image:  ghcr.io/incredinews/services:squashed
     build:
       context: .
@@ -116,6 +122,10 @@ services:
       loki:
         ipv4_address: 10.12.34.111
     container_name: subfetch
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: 10.12.34.55:24224
     #image:  ghcr.io/incredinews/services:squashed
     build:
       context: .
