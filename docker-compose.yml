@@ -85,7 +85,7 @@ services:
     networks:
       loki:
         ipv4_address: 10.12.34.56
-    container_name: cloudflared-tunnel
+    container_name: igress
 #    image: cloudflare/cloudflared
     build:
       context: .
