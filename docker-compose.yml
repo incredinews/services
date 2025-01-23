@@ -2,7 +2,11 @@ version: "3"
 
 networks:
   loki:
-
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.12.34.0/24
+         gateway: 10.12.34.1
 volumes:
   log-data:
     driver: local
@@ -34,7 +38,12 @@ services:
     depends_on:
       - loki
     networks:
-      - loki
+      loki:
+        ipv4_address: 10.12.34.11
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: 10.12.34.55:24224
     build:
       context: .
       dockerfile: Dockerfile.action
@@ -62,7 +71,8 @@ services:
       dockerfile: Dockerfile.loki
 #CMD ["/fluent-bit/bin/fluent-bit", "-e","/fluent-bit/bin/out_grafana_loki.so", "-c", "/fluent-bit/etc/fluent-bit.conf"]
     networks:
-      - loki
+      loki:
+        ipv4_address: 10.12.34.55
     volumes:
       - log-data:/logs
 #    volumes:
@@ -73,8 +83,14 @@ services:
   tunnel:
     depends_on:
       - loki
+    networks:
+      loki:
+        ipv4_address: 10.12.34.56
     container_name: cloudflared-tunnel
-    image: cloudflare/cloudflared
+#    image: cloudflare/cloudflared
+    build:
+      context: .
+      dockerfile: Dockerfile.cf
     restart: unless-stopped
     command: tunnel run --config=/root/.cloudflared/config.yml
 #    environment:

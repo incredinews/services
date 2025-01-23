@@ -1,4 +1,35 @@
-name: Manually triggered workflow
+name: Worklflowlowlow
+env:
+  #DBSTRING: ${{secrets.DBSTRING}}
+  GIST_TOKEN: ${{secrets.GIST_TOKEN}}
+  GIT_USER: ${{secrets.GIT_USER}}
+  GIST_ID:  ${{secrets.GIST_ID }}
+  LOKI_HOST:  ${{secrets.LOKI_HOST }}
+  LOKI_USER:  ${{secrets.LOKI_USER }}
+  LOKI_TOKN:  ${{secrets.LOKI_TOKN }}
+  CF_TUN_GZ:  ${{secrets.CF_TUN_GZ }}
+  CF_PAGESPROJECT: ${{secrets.CF_PAGESPROJECT }}
+  CLOUDFLARE_API_TOKEN: ${{secrets.CLOUDFLARE_API_TOKEN }}
+  #GIST_ID:  ${{ vars.GIST_ID }}
+
+concurrency:
+  group: feeder-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+#on:
+#  push:
+#    paths:
+#      - json-to-db.py
+#      - run.sh
+#      - feeds/*
+#      - action.sh
+#      - docker-compose.yml
+#      - .github/workflows/*
+#    branches:
+#      - 'master'
+#      - 'main'
+#  schedule:
+#    - cron: "*/21 * * * *"
 on:
   workflow_dispatch:
     inputs:
@@ -12,9 +43,109 @@ on:
         default: 'The Octoverse'
 
 jobs:
+
+  clean-runs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete workflow runs
+        uses: Mattraks/delete-workflow-runs@main
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          retain_days: 0
+          keep_minimum_runs: 2
   say_hello:
     runs-on: ubuntu-latest
     steps:
     - run: |
         echo "Hello $!"
         echo "- in $!"
+  cron-action:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/incredinews/rotator:squashed
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+#      - name: Sleep for 10 seconds
+#        uses: jakejarvis/wait-action@master
+#        with:
+#          time: '10s'
+      - name: WHOAMI
+        run: bash -c "id -u;id -un"
+      - name: test compose
+        run: |
+              pwd
+              docker compose config
+      - name: WAITFORBUILD
+        run: bash -c 'for img in $(grep "image:" docker-compose.yml |grep -v "#" ;cat Dockerfil*|grep FROM|sed "s/FROM//g" ) ;do docker  pull $img  & done ;wait'|| true
+#      - name: Restore cached Primes
+#        id: cache-primes-restore
+#        uses: actions/cache/restore@v4
+#        with:
+#          path: |
+#            cache
+#            pages
+#          key: ${{ runner.os }}-cache
+
+#      - name: WAIT ON BUILD
+#        run: |
+#              pwd
+#              sleep 240
+#        on:
+#          push:
+#            paths:
+#              - Dockerfile
+#              - .github/workflows/build.yml
+      - name: Run service 
+        run: |
+              pwd
+              sed 's/HOST_NAME/'"${LOKI_HOST}"'/g' -i fluent-conf/fluent-bit.conf
+              sed 's/USER_NAME/'"${LOKI_USER}"'/g' -i fluent-conf/fluent-bit.conf
+              sed   's/API_KEY/'"${LOKI_TOKN}"'/g' -i fluent-conf/fluent-bit.conf
+              mkdir cloudflareconf
+              cd cloudflareconf
+              echo "${CF_TUN_GZ}"|base64 -d |tar xvz
+              docker compose build
+              #docker compose up
+              docker compose up -d loki 
+              docker compose logs --follow loki &
+              #docker compose up action
+              docker compose up finish -d &
+              sleep 5
+              sleep 10 ; docker compose logs --follow action
+              echo  "getting cache:"
+              #docker compose logs --follow --no-color --no-log-prefix finish |tar xvz 
+              echo -n "count:" && docker compose -f docker-compose.yml exec finish bash -c 'cd /extcache/cache && cd /extcache && tar cz cache/'|tar xz|wc -l 
+              #fg
+              
+              #bash action.sh
+#              cp -rv $(pwd)/ /home/runner/work/_temp/_github_home/
+#              ( cd /home/runner/work/_temp/_github_home/$(basename $(pwd)); test -e logs || mkdir logs ; bash action.sh 2>&1) || exit 1
+#              (test -e /home/runner/work/_temp/_github_home/$(basename $(pwd))/logs && mv /home/runner/work/_temp/_github_home/$(basename $(pwd))/logs . )
+#              (test -e /home/runner/work/_temp/_github_home/$(basename $(pwd))/cache && mv /home/runner/work/_temp/_github_home/$(basename $(pwd))/cache . )
+#              echo done
+        #run: echo disabled
+      - name: Save Primes
+        id: cache-primes-save
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            cache
+            pages
+          key: ${{ runner.os }}-cache-${{ hashFiles('*.sh') }}-${{ hashFiles('**/current.json') }}      
+ #     - name: Archive production artifacts
+ #       uses: actions/upload-artifact@v4
+ #       with:
+ #         name: dist-without-markdown
+ #         path: |
+ #           pages
+ #           logs
+ #           logs/*
+  workflow-keepalive:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - uses: liskin/gh-workflow-keepalive@v1
