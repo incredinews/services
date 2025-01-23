@@ -108,7 +108,7 @@ jobs:
         run: |
               pwd
 
-              sed 's/sleep 3678/sleep '"${{ github.event.inputs.waittime }}"'/g' -i docker-compose.yml
+              sed 's/3678/'"${{ github.event.inputs.waittime }}"'/g' -i docker-compose.yml
               ( mkdir cloudflareconf;cd cloudflareconf;echo "${CF_TUN_GZ}"|base64 -d |tar xvz) & 
               sed 's/HOST_NAME/'"${LOKI_HOST}"'/g' -i fluent-conf/fluent-bit.conf
               sed 's/USER_NAME/'"${LOKI_USER}"'/g' -i fluent-conf/fluent-bit.conf
@@ -123,12 +123,12 @@ jobs:
               #docker compose up
               docker compose up -d loki
               docker compose up -d ingress
-              docker compose logs --follow loki &
-              docker compose logs --follow meta &
-              docker compose logs --follow subfetch &
+              #docker compose logs --follow loki &
+              #docker compose logs --follow meta &
+              docker compose logs --follow fetch &
               #docker compose up action
               docker compose up finish -d &
-              sleep 10 ; docker compose logs --follow action ingress  
+              sleep 10 ; docker compose logs --follow action  
               #sleep 10 ; docker compose logs --follow action
               echo  "getting cache:"
               #docker compose logs --follow --no-color --no-log-prefix finish |tar xvz 
