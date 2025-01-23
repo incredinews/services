@@ -12,9 +12,9 @@ env:
   CLOUDFLARE_API_TOKEN: ${{secrets.CLOUDFLARE_API_TOKEN }}
   #GIST_ID:  ${{ vars.GIST_ID }}
 
-concurrency:
-  group: feeder-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
+#concurrency:
+#  group: feeder-${{ github.workflow }}-${{ github.ref }}
+#  cancel-in-progress: false
 
 #on:
 #  push:
