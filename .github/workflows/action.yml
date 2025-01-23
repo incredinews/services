@@ -47,8 +47,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - run: |
-        echo "Hello $!"
-        echo "- in $!"
+        echo "Hello $INPUT_NAME"
+        echo "- in $INPUT_LOCATION"
   clean-runs:
     runs-on: ubuntu-latest
     steps:
