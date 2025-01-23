@@ -101,7 +101,7 @@ services:
     networks:
       loki:
         ipv4_address: 10.12.34.111
-    container_name: cloudflared-tunnel
+    container_name: meta
     #image:  ghcr.io/incredinews/services:squashed
     build:
       context: .
