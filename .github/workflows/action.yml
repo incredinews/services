@@ -107,7 +107,6 @@ jobs:
       - name: Run service 
         run: |
               pwd
-
               sed 's/3678/'"${{ github.event.inputs.waittime }}"'/g' -i docker-compose.yml
               ( mkdir cloudflareconf;cd cloudflareconf;echo "${CF_TUN_GZ}"|base64 -d |tar xvz) & 
               sed 's/HOST_NAME/'"${LOKI_HOST}"'/g' -i fluent-conf/fluent-bit.conf
