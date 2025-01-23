@@ -109,7 +109,11 @@ jobs:
               sed   's/API_KEY/'"${LOKI_TOKN}"'/g' -i fluent-conf/fluent-bit.conf
               git clone https://github.com/incredinews/deno-subfetch.git &
               git clone https://github.com/TheFoundation/cloudflare-worker-scraper.git metaworker
-              docker compose build
+              docker compose build loki & 
+              docker compose build fetch &
+              docker compose build meta &
+              wait
+              docker-compose build
               #docker compose up
               docker compose up -d loki
               docker compose up -d ingress
