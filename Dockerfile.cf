@@ -1,2 +1,4 @@
 FROM cloudflare/cloudflared
 COPY cloudflareconf /etc/cloudflared
+COPY cloudflareconf /root/.cloudflared
+USER root
