@@ -99,7 +99,6 @@ services:
   meta:
     depends_on:
       - loki
-      - ingress
     networks:
       loki:
         ipv4_address: 10.12.34.112
