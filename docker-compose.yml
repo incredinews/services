@@ -117,7 +117,7 @@ services:
       dockerfile: Dockerfile.meta
     restart: unless-stopped
     command: /bin/bash -c "cd /worker;npm install ;npx wrangler dev --ip 0.0.0.0" 
-  fetch:
+  subfetch:
     depends_on:
       - loki
     networks:
