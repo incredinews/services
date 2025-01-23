@@ -116,7 +116,7 @@ jobs:
               git clone https://github.com/incredinews/deno-subfetch.git &
               git clone https://github.com/TheFoundation/cloudflare-worker-scraper.git metaworker
               docker compose build loki     &> /tmp/build_lok & 
-              docker compose build subfetch &> /tmp/build_sub &
+              docker compose build fetch    &> /tmp/build_sub &
               docker compose build meta     &> /tmp/build_met &
               wait
               docker-compose build
