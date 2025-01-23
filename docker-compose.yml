@@ -116,7 +116,7 @@ services:
       context: .
       dockerfile: Dockerfile.meta
     restart: unless-stopped
-    command: /bin/bash -c "cd /worker;npm install ;npx wrangler dev --ip "0.0.0.0" --remote"
+    command: /bin/bash -c "cd /worker;npm install ;npx wrangler dev --ip 0.0.0.0" 
   fetch:
     depends_on:
       - loki
