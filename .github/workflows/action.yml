@@ -103,14 +103,12 @@ jobs:
       - name: Run service 
         run: |
               pwd
-              mkdir cloudflareconf
-              cd cloudflareconf
-              echo "${CF_TUN_GZ}"|base64 -d |tar xvz
+              ( mkdir cloudflareconf;cd cloudflareconf;echo "${CF_TUN_GZ}"|base64 -d |tar xvz) & 
               sed 's/HOST_NAME/'"${LOKI_HOST}"'/g' -i fluent-conf/fluent-bit.conf
               sed 's/USER_NAME/'"${LOKI_USER}"'/g' -i fluent-conf/fluent-bit.conf
               sed   's/API_KEY/'"${LOKI_TOKN}"'/g' -i fluent-conf/fluent-bit.conf
-              git clone https://github.com/TheFoundation/cloudflare-worker-scraper.git metaworker &
-              git clone https://github.com/incredinews/deno-subfetch.git
+              git clone https://github.com/incredinews/deno-subfetch.git &
+              git clone https://github.com/TheFoundation/cloudflare-worker-scraper.git metaworker
               docker compose build
               #docker compose up
               docker compose up -d loki 
