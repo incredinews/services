@@ -87,7 +87,8 @@ services:
     networks:
       loki:
         ipv4_address: 10.12.34.56
-    container_name: igress
+    container_name: ingress
+    hostname: ingress
 #    image: cloudflare/cloudflared
     build:
       context: .
@@ -105,6 +106,7 @@ services:
       loki:
         ipv4_address: 10.12.34.123
     container_name: metainfo
+    hostname: metainfo
     logging:
       driver: "fluentd"
       options:
@@ -122,6 +124,7 @@ services:
       loki:
         ipv4_address: 10.12.34.111
     container_name: subfetch
+    hostname: subfetch
     logging:
       driver: "fluentd"
       options:
