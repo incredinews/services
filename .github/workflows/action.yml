@@ -62,7 +62,7 @@ jobs:
   cron-action:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/incredinews/rotator:squashed
+      image: ghcr.io/incredinews/services:squashed
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
