@@ -120,8 +120,8 @@ jobs:
               docker compose logs --follow loki &
               #docker compose up action
               docker compose up finish -d &
-              sleep 10 ; docker compose logs --follow action ingress & 
-              #sleep 10 ; docker compose logs --follow action
+              #sleep 10 ; docker compose logs --follow action ingress  
+              sleep 10 ; docker compose logs --follow action
               echo  "getting cache:"
               #docker compose logs --follow --no-color --no-log-prefix finish |tar xvz 
               echo -n "count:" && docker compose -f docker-compose.yml exec finish bash -c 'cd /extcache/cache && cd /extcache && tar cz cache/'|tar xz|wc -l 
