@@ -103,7 +103,7 @@ services:
       - loki
     networks:
       loki:
-        ipv4_address: 10.12.34.112
+        ipv4_address: 10.12.34.123
     container_name: metainfo
     logging:
       driver: "fluentd"
