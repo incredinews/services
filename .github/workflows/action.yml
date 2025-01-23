@@ -124,6 +124,8 @@ jobs:
               docker compose up -d loki
               docker compose up -d ingress
               docker compose logs --follow loki &
+              docker compose logs --follow meta &
+              docker compose logs --follow subfetch &
               #docker compose up action
               docker compose up finish -d &
               sleep 10 ; docker compose logs --follow action ingress  
