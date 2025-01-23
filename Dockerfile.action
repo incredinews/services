@@ -1,0 +1,2 @@
+FROM ghcr.io/incredinews/services:squashed
+COPY . /repo

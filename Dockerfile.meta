@@ -1,0 +1,3 @@
+FROM ghcr.io/incredinews/services:squashed
+COPY metaworker /worker
+# xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

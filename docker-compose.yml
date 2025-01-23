@@ -34,7 +34,7 @@ services:
     #command: /bin/bash -c 'docker ps -a >&2 ;sleep 30; while (docker ps -a |grep action|grep -q -e reated -e unning  -e Up);do docker ps -a |grep action>&2;echo "still running" &>2;sleep 30;done;cd /extcache/cache && cd /extcache && tar cvz cache/'
     command: /bin/bash -c 'docker ps -a >&2 ;sleep 30; while (docker ps -a |grep action|grep -q -e reated -e unning  -e Up);do docker ps -a |grep action>&2;echo "still running" &>2;sleep 30;done;echo waiting for cache-fetcher ;sleep 120'
   action:
-    #image:  ghcr.io/incredinews/rotator:squashed
+    #image:  ghcr.io/incredinews/services:squashed
     depends_on:
       - loki
     networks:
@@ -95,3 +95,16 @@ services:
     command: tunnel run --config=/root/.cloudflared/config.yml
 #    environment:
 #      - TUNNEL_TOKEN=mytokengoeshere
+  meta:
+    depends_on:
+      - loki
+    networks:
+      loki:
+        ipv4_address: 10.12.34.111
+    container_name: cloudflared-tunnel
+    #image:  ghcr.io/incredinews/services:squashed
+    build:
+      context: .
+      dockerfile: Dockerfile.meta
+    restart: unless-stopped
+    command: /bin/bash -c "cd /worker;npx wrangler dev"
