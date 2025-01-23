@@ -53,7 +53,7 @@ services:
       - log-data:/repo/app/logs
       - cache-data:/extcache
 #    command: /bin/bash -c " cd /repo && bash action.sh"
-    command: /bin/bash -c "sleep 3666"
+    command: /bin/bash -c "sleep 3678"
     environment:
         GIT_USER: ${GIT_USER}
         GIST_ID: ${GIST_ID}

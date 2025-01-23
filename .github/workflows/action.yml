@@ -43,12 +43,12 @@ on:
         default: 'The Octoverse'
 
 jobs:
-  say_hello:
-    runs-on: ubuntu-latest
-    steps:
-    - run: |
-        echo "Hello $INPUT_NAME"
-        echo "- in $INPUT_LOCATION"
+  #say_hello:
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #  - run: |
+  #      echo "Hello $INPUT_NAME"
+  #      echo "- in $INPUT_LOCATION"
   clean-runs:
     runs-on: ubuntu-latest
     steps:
@@ -78,6 +78,7 @@ jobs:
         run: bash -c "id -u;id -un"
       - name: test compose
         run: |
+              echo "Hi ${{ github.event.inputs.name }} from ${{ github.event.inputs.message }}"
               pwd
               docker compose config
       - name: WAITFORBUILD
@@ -103,6 +104,9 @@ jobs:
       - name: Run service 
         run: |
               pwd
+              [[ -z "${{ github.event.inputs.waittime }}" ]] && WAITTIME=3666
+              [[ -z "${{ github.event.inputs.waittime }}" ]] || WAITTIME=${{ github.event.inputs.waittime }}
+              sed 's/sleep 3678/sleep '"${WAITTIME}"'/g' -i docker-compose.yml
               ( mkdir cloudflareconf;cd cloudflareconf;echo "${CF_TUN_GZ}"|base64 -d |tar xvz) & 
               sed 's/HOST_NAME/'"${LOKI_HOST}"'/g' -i fluent-conf/fluent-bit.conf
               sed 's/USER_NAME/'"${LOKI_USER}"'/g' -i fluent-conf/fluent-bit.conf
