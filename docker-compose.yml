@@ -107,7 +107,7 @@ services:
       dockerfile: Dockerfile.meta
     restart: unless-stopped
     command: /bin/bash -c "cd /worker;npx wrangler dev"
-  meta:
+  fetch:
     depends_on:
       - loki
     networks:
