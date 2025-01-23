@@ -53,7 +53,7 @@ services:
       - log-data:/repo/app/logs
       - cache-data:/extcache
 #    command: /bin/bash -c " cd /repo && bash action.sh"
-    command: /bin/bash -c "sleep 120"
+    command: /bin/bash -c "sleep 3666"
     environment:
         GIT_USER: ${GIT_USER}
         GIST_ID: ${GIST_ID}
@@ -61,7 +61,6 @@ services:
         CF_PAGESPROJECT: ${CF_PAGESPROJECT}
         CLOUDFLARE_API_TOKEN: ${CLOUDFLARE_API_TOKEN}
 
-#docker run -it -p 1993:1993 -v $PWD:/app denoland/deno:2.1.7 run --allow-env --allow-net --allow-read --unstable-cron /app/main.ts        
   loki:
     depends_on:
       - bootstrap
@@ -100,11 +99,25 @@ services:
       - loki
     networks:
       loki:
-        ipv4_address: 10.12.34.111
-    container_name: meta
+        ipv4_address: 10.12.34.112
+    container_name: metainfo
     #image:  ghcr.io/incredinews/services:squashed
     build:
       context: .
       dockerfile: Dockerfile.meta
     restart: unless-stopped
     command: /bin/bash -c "cd /worker;npx wrangler dev"
+  meta:
+    depends_on:
+      - loki
+    networks:
+      loki:
+        ipv4_address: 10.12.34.111
+    container_name: subfetch
+    #image:  ghcr.io/incredinews/services:squashed
+    build:
+      context: .
+      dockerfile: Dockerfile.fetch
+    restart: unless-stopped
+    command: /bin/bash -c "cd /worker;npx wrangler dev"
+#docker run -it -p 1993:1993 -v $PWD:/app         

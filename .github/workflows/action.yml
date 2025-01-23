@@ -81,7 +81,7 @@ jobs:
               pwd
               docker compose config
       - name: WAITFORBUILD
-        run: bash -c 'for img in $(grep "image:" docker-compose.yml |grep -v "#" ;cat Dockerfil*|grep FROM|sed "s/FROM//g" ) ;do docker  pull $img  & done ;wait'|| true
+        run: bash -c 'for img in $(grep "image:" docker-compose.yml |grep -v "#" ;grep ^FROM Dockerfil*|sed "s/FROM //g" ) ;do docker  pull $img  & done ;wait'|| true
 #      - name: Restore cached Primes
 #        id: cache-primes-restore
 #        uses: actions/cache/restore@v4
@@ -103,13 +103,14 @@ jobs:
       - name: Run service 
         run: |
               pwd
-              sed 's/HOST_NAME/'"${LOKI_HOST}"'/g' -i fluent-conf/fluent-bit.conf
-              sed 's/USER_NAME/'"${LOKI_USER}"'/g' -i fluent-conf/fluent-bit.conf
-              sed   's/API_KEY/'"${LOKI_TOKN}"'/g' -i fluent-conf/fluent-bit.conf
-              git clone https://github.com/TheFoundation/cloudflare-worker-scraper.git metaworker
               mkdir cloudflareconf
               cd cloudflareconf
               echo "${CF_TUN_GZ}"|base64 -d |tar xvz
+              sed 's/HOST_NAME/'"${LOKI_HOST}"'/g' -i fluent-conf/fluent-bit.conf
+              sed 's/USER_NAME/'"${LOKI_USER}"'/g' -i fluent-conf/fluent-bit.conf
+              sed   's/API_KEY/'"${LOKI_TOKN}"'/g' -i fluent-conf/fluent-bit.conf
+              git clone https://github.com/TheFoundation/cloudflare-worker-scraper.git metaworker &
+              git clone https://github.com/incredinews/deno-subfetch.git
               docker compose build
               #docker compose up
               docker compose up -d loki 
