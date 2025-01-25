@@ -108,7 +108,6 @@ jobs:
         run: |
               pwd
               myip=$(ifconfig |grep inet|grep -v inet6 |grep -v 127.0.0.1|head -n1|cut -dt -f2|cut -d" " -f2)
-              socat tcp-listen:24224,reuseaddr,fork tcp-connect:10.12.34.55:24224 &
               sed 's/10.12.34.55:24224/'"${myip}"':24224/g' -i docker-compose.yml
               sed 's/3678/'"${{ github.event.inputs.waittime }}"'/g' -i docker-compose.yml
               ( mkdir cloudflareconf;cd cloudflareconf;echo "${CF_TUN_GZ}"|base64 -d |tar xvz) & 
@@ -121,6 +120,7 @@ jobs:
               docker compose build fetch    &> /tmp/build_sub &
               docker compose build meta     &> /tmp/build_met &
               wait
+              socat tcp-listen:24224,reuseaddr,fork tcp-connect:10.12.34.55:24224 &
               docker-compose build
               #docker compose up
               docker compose up -d loki
