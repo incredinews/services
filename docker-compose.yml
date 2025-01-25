@@ -87,6 +87,10 @@ services:
     networks:
       loki:
         ipv4_address: 10.12.34.56
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: 10.12.34.55:24224
     container_name: ingress
     hostname: ingress
 #    image: cloudflare/cloudflared
