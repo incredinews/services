@@ -106,6 +106,8 @@ services:
   
     depends_on:
       - loki
+    volumes:
+      - log-data:/logs
     networks:
       loki:
         ipv4_address: 10.12.34.123
@@ -120,23 +122,25 @@ services:
       context: .
       dockerfile: Dockerfile.meta
     restart: unless-stopped
-    command: /bin/bash -c "cd /worker;npm install ;npx wrangler dev --ip 0.0.0.0" 
+    command: /bin/bash -c "cd /worker;npm install ;npx wrangler dev --ip 0.0.0.0 &>/logs/pages.log" 
   fetch:
     depends_on:
       - loki
+    volumes:
+      - log-data:/logs
     networks:
       loki:
         ipv4_address: 10.12.34.111
     container_name: subfetch
     hostname: subfetch
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: 10.12.34.55:24224
+#    logging:
+#      driver: "fluentd"
+#      options:
+#        fluentd-address: 10.12.34.55:24224
     #image:  ghcr.io/incredinews/services:squashed
     build:
       context: .
       dockerfile: Dockerfile.fetch
     restart: unless-stopped
-    command: /bin/bash -c "cd /app/;/root/.deno/bin/deno  run --allow-net=0.0.0.0:8000 --allow-env --allow-read --unstable-cron --allow-import /app/index.ts"
+    command: /bin/bash -c "cd /app/;/root/.deno/bin/deno  run --allow-net=0.0.0.0:8000 --allow-env --allow-read --unstable-cron --allow-import /app/index.ts  &>/logs/curl.log"
 #docker run -it -p 1993:1993 -v $PWD:/app         

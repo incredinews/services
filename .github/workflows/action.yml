@@ -108,7 +108,7 @@ jobs:
         run: |
               pwd
               myip=$(ifconfig |grep inet|grep -v inet6 |grep -v 127.0.0.1|head -n1|cut -dt -f2|cut -d" " -f2)
-              sed 's/10.12.34.55:24224/'"${myip}"':24224/g' -i docker-compose.yml
+              #sed 's/10.12.34.55:24224/'"${myip}"':24224/g' -i docker-compose.yml
               sed 's/3678/'"${{ github.event.inputs.waittime }}"'/g' -i docker-compose.yml
               ( mkdir cloudflareconf;cd cloudflareconf;echo "${CF_TUN_GZ}"|base64 -d |tar xvz) & 
               sed 's/HOST_NAME/'"${LOKI_HOST}"'/g' -i fluent-conf/fluent-bit.conf
@@ -128,12 +128,16 @@ jobs:
               docker compose up -d loki
               docker compose up -d ingress
               docker compose logs --follow loki &
-              docker compose logs --follow meta | bash logger.sh http://10.12.34.55:5144/daemon log &
-              docker compose logs --follow fetch |bash logger.sh http://10.12.34.55:5144/daemon log &
+              #docker compose logs --follow meta | bash logger.sh http://10.12.34.55:5144/daemon log &
+              #docker compose logs --follow fetch |bash logger.sh http://10.12.34.55:5144/daemon log &
               #docker compose up action
               docker compose up finish -d &
               sleep 10 ; docker compose logs --follow action  
               #sleep 10 ; docker compose logs --follow action
+              ###
+              ###done#
+              docker-compose ps -q | xargs docker stats--no-stream --no-trunc
+
               echo  "getting cache:"
               #docker compose logs --follow --no-color --no-log-prefix finish 
               echo -n "count:" && docker compose -f docker-compose.yml exec finish bash -c 'cd /extcache/cache && cd /extcache && tar cz cache/'|tar xz|wc -l 
