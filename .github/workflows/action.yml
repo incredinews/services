@@ -125,7 +125,7 @@ jobs:
               wait
               echo "2_ready after "$(($(date +%s)-$starttime))" "
               #socat tcp-listen:24224,reuseaddr,fork tcp-connect:10.12.34.55:24224 &
-              time docker-compose build 
+              bash -c "time docker-compose build 2>&1 |grep  -i -e  error -e success -e fail"
               #docker compose up
               echo "3_built after "$(($(date +%s)-$starttime))" "
               #docker compose logs --follow meta | bash logger.sh http://10.12.34.55:5144/daemon log &
