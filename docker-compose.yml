@@ -145,5 +145,5 @@ services:
       context: .
       dockerfile: Dockerfile.fetch
     restart: unless-stopped
-    command: /bin/bash -c "cd /app/;/root/.deno/bin/deno  run --allow-net=0.0.0.0:8000 --allow-env --allow-read --unstable-cron --allow-import /app/index.ts  &>/logs/curl.log"
+    command: /bin/bash -c "cd /app/;/root/.deno/bin/deno  run --allow-net=0.0.0.0:8000,0.0.0.0:443,0.0.0.0:80 --allow-env --allow-read --unstable-cron --allow-import /app/index.ts  &>/logs/curl.log"
 #docker run -it -p 1993:1993 -v $PWD:/app         
