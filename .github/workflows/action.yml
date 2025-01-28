@@ -112,12 +112,12 @@ jobs:
               myip=$(ifconfig |grep inet|grep -v inet6 |grep -v 127.0.0.1|head -n1|cut -dt -f2|cut -d" " -f2)
               #sed 's/10.12.34.55:24224/'"${myip}"':24224/g' -i docker-compose.yml
               sed 's/3678/'"${{ github.event.inputs.waittime }}"'/g' -i docker-compose.yml
-              ( mkdir cloudflareconf;cd cloudflareconf;echo "${CF_TUN_GZ}"|base64 -d |tar xvz) & 
-              sed 's/HOST_NAME/'"${LOKI_HOST}"'/g' -i fluent-conf/fluent-bit.conf
-              sed 's/USER_NAME/'"${LOKI_USER}"'/g' -i fluent-conf/fluent-bit.conf
-              sed   's/API_KEY/'"${LOKI_TOKN}"'/g' -i fluent-conf/fluent-bit.conf
-              ( docker compose pull ingress   &>/dev/null ;       docker compose up -d ingress -d ) &
-              ( docker compose build loki     &> /tmp/build_lok ; docker compose up -d loki ) & 
+              ( sed 's/HOST_NAME/'"${LOKI_HOST}"'/g' -i fluent-conf/fluent-bit.conf
+                sed 's/USER_NAME/'"${LOKI_USER}"'/g' -i fluent-conf/fluent-bit.conf
+                sed   's/API_KEY/'"${LOKI_TOKN}"'/g' -i fluent-conf/fluent-bit.conf
+                docker compose build loki     &> /tmp/build_lok ; docker compose up -d loki ) & 
+              ( mkdir cloudflareconf;cd cloudflareconf;echo "${CF_TUN_GZ}"|base64 -d |tar xvz  
+                docker compose pull ingress   &>/dev/null ;       docker compose up -d ingress -d ) &
               ( git clone https://github.com/incredinews/deno-subfetch.git ; docker compose build fetch    &> /tmp/build_sub & ) &
               ( git clone https://github.com/TheFoundation/cloudflare-worker-scraper.git metaworker  ; docker compose build meta     &> /tmp/build_met  ) &
               wait
