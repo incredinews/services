@@ -118,7 +118,6 @@ services:
       driver: "fluentd"
       options:
         fluentd-address: 10.12.34.55:24224
-        SERVICES_TOKEN
     #image:  ghcr.io/incredinews/services:squashed
     build:
       context: .
