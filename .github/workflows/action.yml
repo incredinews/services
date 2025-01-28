@@ -108,6 +108,7 @@ jobs:
       - name: Run service 
         run: |
               pwd
+              starttime=$(date +%s)
               myip=$(ifconfig |grep inet|grep -v inet6 |grep -v 127.0.0.1|head -n1|cut -dt -f2|cut -d" " -f2)
               #sed 's/10.12.34.55:24224/'"${myip}"':24224/g' -i docker-compose.yml
               sed 's/3678/'"${{ github.event.inputs.waittime }}"'/g' -i docker-compose.yml
@@ -115,19 +116,18 @@ jobs:
               sed 's/HOST_NAME/'"${LOKI_HOST}"'/g' -i fluent-conf/fluent-bit.conf
               sed 's/USER_NAME/'"${LOKI_USER}"'/g' -i fluent-conf/fluent-bit.conf
               sed   's/API_KEY/'"${LOKI_TOKN}"'/g' -i fluent-conf/fluent-bit.conf
-              git clone https://github.com/incredinews/deno-subfetch.git &
-              git clone https://github.com/TheFoundation/cloudflare-worker-scraper.git metaworker
-              docker compose build loki     &> /tmp/build_lok & 
-              docker compose build fetch    &> /tmp/build_sub &
-              docker compose build meta     &> /tmp/build_met &
+              ( docker compose pull ingress   &>/dev/null ;       docker compose up -d ingress -d ) &
+              ( docker compose build loki     &> /tmp/build_lok ; docker compose up -d loki ) & 
+              ( git clone https://github.com/incredinews/deno-subfetch.git ; docker compose build fetch    &> /tmp/build_sub & ) &
+              ( git clone https://github.com/TheFoundation/cloudflare-worker-scraper.git metaworker  ; docker compose build meta     &> /tmp/build_met  ) &
               wait
-              curl https://gitlab.com/the-foundation/bash-logger/-/raw/master/log-to-fluent.sh > logger.sh
+              echo "2 after "$(($(date +%s)-$starttime))" "
 
-              socat tcp-listen:24224,reuseaddr,fork tcp-connect:10.12.34.55:24224 &
+              #socat tcp-listen:24224,reuseaddr,fork tcp-connect:10.12.34.55:24224 &
+              curl -s https://gitlab.com/the-foundation/bash-logger/-/raw/master/log-to-fluent.sh > logger.sh &
               time docker-compose build 2>&1 |grep  -i -e  error -e success -e fail
               #docker compose up
-              docker compose up -d loki 
-              docker compose up -d ingress &
+
               docker compose logs --follow loki &
               #docker compose logs --follow meta | bash logger.sh http://10.12.34.55:5144/daemon log &
               #docker compose logs --follow fetch |bash logger.sh http://10.12.34.55:5144/daemon log &
