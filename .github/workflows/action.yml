@@ -126,14 +126,14 @@ jobs:
               socat tcp-listen:24224,reuseaddr,fork tcp-connect:10.12.34.55:24224 &
               time docker-compose build 2>&1 |grep  -i -e  error -e success -e fail
               #docker compose up
-              ( docker compose up -d loki ; docker compose logs --follow loki ) &
+              docker compose up -d loki 
               docker compose up -d ingress &
-
+              docker compose logs --follow loki &
               #docker compose logs --follow meta | bash logger.sh http://10.12.34.55:5144/daemon log &
               #docker compose logs --follow fetch |bash logger.sh http://10.12.34.55:5144/daemon log &
               #docker compose up action
               docker compose up finish -d
-              docker compose logs --follow action  
+              sleep 2;docker compose logs --follow action  
               #sleep 10 ; docker compose logs --follow action
               ###
               ###done#
