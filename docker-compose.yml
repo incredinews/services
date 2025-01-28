@@ -103,7 +103,6 @@ services:
 #    environment:
 #      - TUNNEL_TOKEN=mytokengoeshere
   meta:
-  
     depends_on:
       - loki
     volumes:
@@ -113,10 +112,13 @@ services:
         ipv4_address: 10.12.34.123
     container_name: metainfo
     hostname: metainfo
+    environment:
+        API_TOKEN: ${SERVICES_TOKEN}
     logging:
       driver: "fluentd"
       options:
         fluentd-address: 10.12.34.55:24224
+        SERVICES_TOKEN
     #image:  ghcr.io/incredinews/services:squashed
     build:
       context: .
@@ -133,6 +135,8 @@ services:
         ipv4_address: 10.12.34.111
     container_name: subfetch
     hostname: subfetch
+    environment:
+        API_KEY: ${SERVICES_TOKEN}
 #    logging:
 #      driver: "fluentd"
 #      options:
